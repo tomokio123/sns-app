@@ -24,6 +24,7 @@ class _PostPageState extends State<PostPage> {
         child: Column(
           children: [
             TextField(
+              // controllerプロパティによって入力値を管理したり、制限したりできる
               controller: contentController,
             ),
             SizedBox(height: 20),
