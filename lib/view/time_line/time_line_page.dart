@@ -16,7 +16,7 @@ class _TimeLinePageState extends State<TimeLinePage> {
     id: '1',
     name: '福山',
     selfIntroduction: 'Hello!',
-    imagePath: 'https://www.google.com/imgres?imgurl=https%3A%2F%2Fmasafumi-blog.com%2Fwp-content%2Fuploads%2F2020%2F09%2FFlutter_%25E3%2583%25AD%25E3%2582%25B4.png&imgrefurl=https%3A%2F%2Fmasafumi-blog.com%2Fbuilding-application-dev-env-flutter&tbnid=QGLEy5YWSR1aoM&vet=12ahUKEwiYyJm18Ln5AhXnRvUHHaUeBjoQMygGegUIARDKAQ..i&docid=p8DKYyoU8kK09M&w=2856&h=2193&q=Flutter%20lab&ved=2ahUKEwiYyJm18Ln5AhXnRvUHHaUeBjoQMygGegUIARDKAQ',
+    imagePath: '/Users/fukuyamatomoki/StudioProjects/sns_app/lib/assets/IMG_3621.jpg',
     userId: 't.fukuyama',
     createdTime: DateTime.now(),
     updatedTime: DateTime.now() //Accountのインスタンス作成
@@ -59,9 +59,17 @@ class _TimeLinePageState extends State<TimeLinePage> {
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 22,
-                    backgroundImage: NetworkImage(myAccount.imagePath),
+                  Container(
+                    decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                            fit: BoxFit.fill,
+                            image: AssetImage(myAccount.imagePath)
+                        ),
+                        color: Colors.white
+                    ),
+                    width: 44.0,
+                    height: 44.0,
                   ),
                   Expanded(
                     child: Container(
