@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({Key? key}) : super(key: key);
@@ -13,6 +15,18 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passController = TextEditingController();
   TextEditingController selfIntroductionController = TextEditingController();
+
+  File? image; //dart.ioのFile? について調査せよ
+  ImagePicker picker = ImagePicker();
+
+  Future<void> getImageFromGallery() async{//画像取得メソッド写真フォルダから
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if(pickedFile != null){
+      setState(() {
+        image = File(pickedFile.path);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +43,15 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
           child: Column(
             children: [
               const SizedBox(height: 30),
-              CircleAvatar(
-                radius: 40,
-                child: Icon(Icons.add),
+              GestureDetector(
+                onTap: (){
+                  getImageFromGallery();
+                },
+                child: CircleAvatar(
+                  foregroundImage: image == null ? null : FileImage(image!),
+                  radius: 40,
+                  child: Icon(Icons.add),
+                ),
               ),
               Container(
                 width: 300,
