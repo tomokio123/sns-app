@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sns_app/view/start_up/create_account_page.dart';
 
 import '../screen.dart';
 
@@ -52,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
                       TextSpan(text: 'こちら',
                           style: const TextStyle(color: Colors.blue),
                           recognizer: TapGestureRecognizer()..onTap = (){
-                            print('アカウント作成');
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountPage()));
                           }
                       )
                     ]
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                   onPressed:(){
                     //pushReplacementは「遷移後に前のページに戻れなくなる」ナビゲーション
-                    Navigator.pushReplacement(context,
+                    Navigator.push(context,
                         MaterialPageRoute(builder: (context) => const Screen())
                     );
                   },
