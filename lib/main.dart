@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:sns_app/view/screen.dart';
 import 'package:sns_app/view/start_up/login_page.dart';
 
-void main() {
+void main() async{
+  await WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
