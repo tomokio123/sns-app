@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sns_app/utils/authentication.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({Key? key}) : super(key: key);
@@ -50,10 +51,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 child: CircleAvatar(
                   foregroundImage: image == null ? null : FileImage(image!),
                   radius: 40,
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                 ),
               ),
-              Container(
+              SizedBox(
                 width: 300,
                 child: TextField(
                   controller: nameController,
@@ -61,7 +62,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.symmetric(vertical: 20),
+                padding: const EdgeInsets.symmetric(vertical: 20),
                 width: 300,
                 child: TextField(
                   controller: userIdController,
@@ -92,14 +93,18 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               ),
               const SizedBox(height: 50),
               ElevatedButton(
-                  onPressed: (){
+                  onPressed: () async {
                     if(nameController.text.isNotEmpty
                         && userIdController.text.isNotEmpty
                         && selfIntroductionController.text.isNotEmpty
                         && emailController.text.isNotEmpty
                         && passController.text.isNotEmpty
+                        && image != null
                     ){
-                      Navigator.pop(context);
+                      var result = await Authentication.signUp(email: emailController.text, pass: passController.text);
+                      if(result == true){
+                        Navigator.pop(context);
+                      }
                     }
                   },
                   child: const Text('アカウントを作成'))

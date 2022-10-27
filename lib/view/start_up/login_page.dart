@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sns_app/utils/authentication.dart';
 import 'package:sns_app/view/start_up/create_account_page.dart';
 
 import '../screen.dart';
@@ -61,11 +62,14 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40),
               ElevatedButton(
-                  onPressed:(){
-                    //pushReplacementは「遷移後に前のページに戻れなくなる」ナビゲーション
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => const Screen())
-                    );
+                  onPressed:() async{
+                    var result = await Authentication.emailSignIn(email: emailController.text, password: passController.text);
+                    if(result == true){
+                      //pushReplacementは「遷移後に前のページに戻れなくなる」ナビゲーション
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const Screen())
+                      );
+                    }
                   },
                   child: const Text('emailでLogin'))
             ],
