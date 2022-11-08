@@ -17,62 +17,71 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              const Text('LoginPage',style: TextStyle(fontSize: 24)),
-              const SizedBox(height: 20),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 20),
-                width: 300,
-                child: TextField(
-                  decoration: const InputDecoration(
-                    hintText: 'メールアドレス'
+    return GestureDetector(
+      onTap: () => primaryFocus?.unfocus(),
+      child: Scaffold(
+        body: SafeArea(
+          child: Container(
+            width: double.infinity,
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                const Text('LoginPage',style: TextStyle(fontSize: 24)),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  width: 300,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                      hintText: 'メールアドレス',
+                    ),
+                    controller: emailController,
+                    autofocus: true,
+                    keyboardType: TextInputType.emailAddress,
+                    textInputAction: TextInputAction.next,
                   ),
-                  controller: emailController,
                 ),
-              ),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  decoration: const InputDecoration(
-                      hintText: 'パスワード'
+                SizedBox(
+                  width: 300,
+                  child: TextField(
+                    decoration: const InputDecoration(
+                        hintText: 'パスワード',
+                        helperText: '※パスワードは6文字以上必要です'
+                    ),
+                    controller: passController,
+                    keyboardType: TextInputType.visiblePassword,
+                    textInputAction: TextInputAction.done,
                   ),
-                  controller: passController,
                 ),
-              ),
-              const SizedBox(height: 10),
-              RichText( //テキストの一部だけ色やサイズなどを変えられるWidget
-                  text: TextSpan(//キーワードなどをハイライト(強調)表示するWidget
-                    style: TextStyle(color: Colors.black),
-                    children: [
-                      TextSpan(text: 'アカウント作成していない方は'),
-                      TextSpan(text: 'こちら',
-                          style: const TextStyle(color: Colors.blue),
-                          recognizer: TapGestureRecognizer()..onTap = (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountPage()));
-                          }
-                      )
-                    ]
-                  )
-              ),
-              const SizedBox(height: 40),
-              ElevatedButton(
-                  onPressed:() async{
-                    var result = await Authentication.emailSignIn(email: emailController.text, password: passController.text);
-                    if(result == true){
-                      //pushReplacementは「遷移後に前のページに戻れなくなる」ナビゲーション
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const Screen())
-                      );
-                    }
-                  },
-                  child: const Text('emailでLogin'))
-            ],
+                const SizedBox(height: 10),
+                RichText( //テキストの一部だけ色やサイズなどを変えられるWidget
+                    text: TextSpan(//キーワードなどをハイライト(強調)表示するWidget
+                      style: TextStyle(color: Colors.black),
+                      children: [
+                        TextSpan(text: 'アカウント作成していない方は'),
+                        TextSpan(text: 'こちら',
+                            style: const TextStyle(color: Colors.blue),
+                            recognizer: TapGestureRecognizer()..onTap = (){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => CreateAccountPage()));
+                            }
+                        )
+                      ]
+                    )
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                    onPressed:() async{
+                      var result = await Authentication.emailSignIn(email: emailController.text, password: passController.text);
+                      if(result == true){
+                        //pushReplacementは「遷移後に前のページに戻れなくなる」ナビゲーション
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => const Screen())
+                        );
+                      }
+                    },
+                    child: const Text('emailでLogin'))
+              ],
+            ),
           ),
         ),
       ),
