@@ -122,6 +122,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       ){
                         var result = await Authentication.signUp(email: emailController.text, pass: passController.text);
                         if(result is UserCredential){//　「resultに入ってる値の型がUserCredential型なら」って意味
+                          await uplordImage(result.user!.uid); //!でnull回避 await をつけておく一応
+                          // uplordが成功し終わってから元の画面に戻るってしたいので
                           Navigator.pop(context);
                         }
                       }
