@@ -2,9 +2,12 @@ import 'dart:ui';
 
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../model/account.dart';
+
 class Authentication {
   static final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   static User? currentFirebaseUser;
+  static Account? myAccount;
 
   static Future<dynamic> signUp({required String email, required String pass}) async{
     try{
@@ -24,7 +27,7 @@ class Authentication {
           password: password);
       currentFirebaseUser = _result.user;
       print("Auth signin ok");
-      return true;
+      return _result;
     } on FirebaseAuthException catch(e){
       print("Auth emailSignIn Error: $e ");
       return false;
