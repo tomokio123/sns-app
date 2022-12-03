@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:sns_app/model/account.dart';
 import 'package:sns_app/utils/authentication.dart';
+import 'package:sns_app/utils/firestore/users.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({Key? key}) : super(key: key);
@@ -22,12 +24,13 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   File? image; //dart.ioのFile? について調査せよ
   ImagePicker picker = ImagePicker();
 
-  Future<void> uplordImage(String uid) async{
+  Future<String> uplordImage(String uid) async{
     final FirebaseStorage storageInstance = FirebaseStorage.instance;
     final Reference ref = storageInstance.ref();
     await ref.child(uid).putFile(image!);
     String downloadUrl = await storageInstance.ref(uid).getDownloadURL();
     print("image_path: $downloadUrl");
+    return downloadUrl;
   }
 
   Future<void> getImageFromGallery() async{//画像取得メソッド写真フォルダから
@@ -121,10 +124,21 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           && image != null
                       ){
                         var result = await Authentication.signUp(email: emailController.text, pass: passController.text);
-                        if(result is UserCredential){//　「resultに入ってる値の型がUserCredential型なら」って意味
-                          await uplordImage(result.user!.uid); //!でnull回避 await をつけておく一応
-                          // uplordが成功し終わってから元の画面に戻るってしたいので
-                          Navigator.pop(context);
+                        if(result is UserCredential) { //　「resultに入ってる値の型がUserCredential型なら」って意味
+                          String imagePath = await uplordImage(result.user!
+                              .uid); //!でnull回避 await をつけておく一応
+                          Account newAccount = Account(
+                              id: result.user!.uid,
+                              name: nameController.text,
+                              userId: userIdController.text,
+                              selfIntroduction: selfIntroductionController.text,
+                              imagePath: imagePath
+                          );
+                          var _result = await UserFireStore.setUser(newAccount);
+                          if (_result == true) {
+                            // uplordが成功し終わってから元の画面に戻るってしたいので
+                            Navigator.pop(context);
+                          }
                         }
                       }
                     },
