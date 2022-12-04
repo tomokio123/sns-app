@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sns_app/utils/authentication.dart';
+import 'package:sns_app/view/account/edit_account_page.dart';
 import '../../model/account.dart';
 import '../../model/post.dart';
 
@@ -38,7 +39,7 @@ class _AccountPageState extends State<AccountPage> {
       body: SafeArea(
         child: SingleChildScrollView(
           //SingleChildScrollViewで囲ったところはスクロールできるよって意味。(ただし高さを指定しないと例外となる)
-          child: Container(
+          child: SizedBox(
             height: MediaQuery.of(context).size.height,
             //containerの高さは「画面の高さ」に等しいですよって意味。
             child: Column(
@@ -77,10 +78,15 @@ class _AccountPageState extends State<AccountPage> {
                             ],
                           ),
                           OutlinedButton(
-                              onPressed: (){
-
+                              onPressed: () async{
+                                var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => EditAccountPage()));
+                                if(result == true){
+                                  setState(() {
+                                    myAccount = Authentication.myAccount!;
+                                  });
+                                }
                               },
-                              child: Text('編集')
+                              child: const Text('編集')
                           )
                         ],
                       ),

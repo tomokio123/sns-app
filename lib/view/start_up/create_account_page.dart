@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:sns_app/model/account.dart';
 import 'package:sns_app/utils/authentication.dart';
 import 'package:sns_app/utils/firestore/users.dart';
+import 'package:sns_app/utils/function_utils.dart';
+import 'package:sns_app/utils/widget_utils.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({Key? key}) : super(key: key);
@@ -22,39 +24,13 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   TextEditingController selfIntroductionController = TextEditingController();
 
   File? image; //dart.ioのFile? について調査せよ
-  ImagePicker picker = ImagePicker();
-
-  Future<String> uplordImage(String uid) async{
-    final FirebaseStorage storageInstance = FirebaseStorage.instance;
-    final Reference ref = storageInstance.ref();
-    await ref.child(uid).putFile(image!);
-    String downloadUrl = await storageInstance.ref(uid).getDownloadURL();
-    print("image_path: $downloadUrl");
-    return downloadUrl;
-  }
-
-  Future<void> getImageFromGallery() async{//画像取得メソッド写真フォルダから
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if(pickedFile != null){
-      setState(() {
-        image = File(pickedFile.path);
-      });
-    }else {
-      print("pickedFileがnullです");
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => primaryFocus?.unfocus(),
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,//AppBarは元々影ができているのでその影を０にする
-          iconTheme: const IconThemeData(color: Colors.black),
-          title: const Text('新規登録',style: TextStyle(color: Colors.black)),
-        ),
+        appBar: WidgetUtils.createAppBar('新規登録'),
         body: SingleChildScrollView(
           child: SizedBox(
             width: double.infinity,
@@ -62,8 +38,13 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               children: [
                 const SizedBox(height: 30),
                 GestureDetector(
-                  onTap: (){
-                    getImageFromGallery();
+                  onTap: () async {
+                    var result = await FunctionUtils.getImageFromGallery();
+                    if(result != null){
+                      setState(() {
+                        image = File(result.path);
+                      });
+                    }
                   },
                   child: CircleAvatar(
                     foregroundImage: image == null ? null : FileImage(image!),
@@ -124,9 +105,10 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           && image != null
                       ){
                         var result = await Authentication.signUp(email: emailController.text, pass: passController.text);
-                        if(result is UserCredential) { //　「resultに入ってる値の型がUserCredential型なら」って意味
-                          String imagePath = await uplordImage(result.user!
-                              .uid); //!でnull回避 await をつけておく一応
+                        if(result is UserCredential) {
+                          //　「resultに入ってる値の型がUserCredential型なら」って意味
+                          String imagePath = await FunctionUtils.uplordImage(result.user!.uid, image!);//uidに加えてimageもおくる。
+                          //!でnull回避 await をつけておく一応
                           Account newAccount = Account(
                               id: result.user!.uid,
                               name: nameController.text,
