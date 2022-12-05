@@ -29,14 +29,14 @@ class _TimeLinePageState extends State<TimeLinePage> {
       id: '1',
       content: 'Hello World1!',
       postAccountId: '1',
-      createdTime: DateTime.now() //Postのインスタンスを作成
+      createdTime: Timestamp.now() //Postのインスタンスを作成
     ),
 
     Post(
         id: '2',
         content: 'Hello World2!',
         postAccountId: '1',
-        createdTime: DateTime.now() //Postのインスタンスを作成
+        createdTime: Timestamp.now() //Postのインスタンスを作成
     ),
   ];
 
@@ -87,7 +87,8 @@ class _TimeLinePageState extends State<TimeLinePage> {
                                   Text('@${myAccount.userId}'),
                                 ],
                               ),
-                              Text(DateFormat('M/d/yy').format(postList[index].createdTime!))
+                              Text(DateFormat('M/d/yy').format(postList[index].createdTime!.toDate()))
+                              //DateTime型じゃないとだめ。よってTimestamp型をDateTime型に変換せよ(　.toDate()　の部分)
                             ],
                           ),
                           Text(postList[index].content)
