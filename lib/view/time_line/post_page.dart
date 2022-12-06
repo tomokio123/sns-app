@@ -30,7 +30,7 @@ class _PostPageState extends State<PostPage> {
               // controllerプロパティによって入力値を管理したり、制限したりできる
               controller: contentController,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () async{
                 if(contentController .text.isNotEmpty){
