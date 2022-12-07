@@ -8,6 +8,7 @@ import 'package:sns_app/utils/authentication.dart';
 import 'package:sns_app/utils/firestore/users.dart';
 import 'package:sns_app/utils/function_utils.dart';
 import 'package:sns_app/utils/widget_utils.dart';
+import 'package:sns_app/view/start_up/login_page.dart';
 
 class EditAccountPage extends StatefulWidget {
   const EditAccountPage({Key? key}) : super(key: key);
@@ -120,7 +121,19 @@ class _EditAccountPageState extends State<EditAccountPage> {
                       }
                     }
                   },
-                  child: const Text('更新'))
+                  child: const Text('更新')),
+              ElevatedButton(
+                  onPressed: (){
+                    Authentication.signOut();
+                    while(Navigator.canPop(context)){//Navigator.canPop(context)＝「popできる状態だったら」
+                      Navigator.pop(context);
+                    }
+                    //popできないような状態になったらpushreplacement　＝　その画面を破棄して新しいルートに遷移する
+                    Navigator.pushReplacement(context, MaterialPageRoute(
+                        builder: (context) => LoginPage()
+                    ));
+                  },
+                  child: Text('ログアウト'))
             ],
           ),
         ),
