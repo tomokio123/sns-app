@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sns_app/model/account.dart';
 import 'package:sns_app/utils/authentication.dart';
+import 'package:sns_app/utils/firestore/posts.dart';
 
 class UserFireStore {
   static final _firestoreInstance = FirebaseFirestore.instance;
@@ -88,4 +89,8 @@ class UserFireStore {
     }
   }
 
+  static Future<dynamic> deleteUser(String accountId) async{
+    await users.doc(accountId).delete();//これだけだとユーザだけを消すことになり紐づいている投稿postは消されない。
+    PostFireStore.deletePosts(accountId);//ユーザを消したあとに自分のaccountIdに紐づいた投稿も消したいので消す
+  }
 }

@@ -56,4 +56,17 @@ class PostFireStore {
     }
   }
 
+  static Future<dynamic> deletePosts(String accountId) async{//AccounIdにひもづくpostの情報を削除する
+    final CollectionReference _userPosts = _firestoreInstance.collection('users')
+        .doc(accountId).collection('myPosts');
+    //usersコレクションのaccountIdドキュメントのmypostコレクション情報を格納(自分のユーザIdを持つ投稿を参照としてもつ)
+
+    var snapShot = await _userPosts.get();//snapShotオブジェクトには上記_userPosts(自分の投稿の参照をgetメソッドで取得する)
+    snapShot.docs.forEach((doc) async{
+      await posts.doc(doc.id).delete();//「posts(全ての投稿)」の中からdocのidと一致するものを消し、docの数だけ繰り返し処理をする
+      _userPosts.doc(doc.id).delete();//「_userPosts(自分の投稿)」の中からdocのidと一致するものを消し、docの数だけ繰り返し処理をする
+      //awaitの処理(posts.doc)が完了してから_userPosts.doc
+    });
+  }
+
 }

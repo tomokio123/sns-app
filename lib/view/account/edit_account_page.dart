@@ -133,7 +133,22 @@ class _EditAccountPageState extends State<EditAccountPage> {
                         builder: (context) => LoginPage()
                     ));
                   },
-                  child: Text('ログアウト'))
+                  child: const Text('ログアウト')),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: (){
+                    UserFireStore.deleteUser(myAccount.id);
+                    Authentication.deleteAuth();
+                    Authentication.signOut();
+                    while(Navigator.canPop(context)){//Navigator.canPop(context)＝「popできる状態だったら」
+                      Navigator.pop(context);
+                    }
+                    //popできないような状態になったらpushreplacement　＝　その画面を破棄して新しいルートに遷移する
+                    Navigator.pushReplacement(context, MaterialPageRoute(
+                        builder: (context) => LoginPage()
+                    ));
+                  },
+                  child: const Text('アカウント削除'))
             ],
           ),
         ),
