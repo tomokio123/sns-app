@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sns_app/utils/authentication.dart';
 import 'package:sns_app/utils/firestore/users.dart';
+import 'package:sns_app/view/start_up/check_email_page.dart';
 import 'package:sns_app/view/start_up/create_account_page.dart';
 
 import '../screen.dart';
@@ -75,12 +76,17 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed:() async{
                       var result = await Authentication.emailSignIn(email: emailController.text, password: passController.text);
                       if(result is UserCredential){
-                        var _result = await UserFireStore.getUser(result.user!.uid);
-                        if(_result = true){
-                          //pushReplacementは「遷移後に前のページに戻れなくなる」ナビゲーション
-                          Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) => const Screen())
-                          );
+                        if(result.user!.emailVerified == true){
+                          var _result = await UserFireStore.getUser(result.user!.uid);
+                          if(_result == true){//_resultがtrue返ってきてユーザ情報が格納されていたら
+                            //pushReplacementは「遷移後に前のページに戻れなくなる」ナビゲーション
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => CheckEmailPage(
+                                    email: emailController.text, pass: passController.text))
+                            );
+                          } else {
+                            print('メール認証できてません');
+                          }
                         }
                       }
                     },

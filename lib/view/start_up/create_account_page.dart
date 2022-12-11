@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:sns_app/model/account.dart';
 import 'package:sns_app/utils/authentication.dart';
 import 'package:sns_app/utils/firestore/users.dart';
 import 'package:sns_app/utils/function_utils.dart';
 import 'package:sns_app/utils/widget_utils.dart';
+import 'package:sns_app/view/start_up/check_email_page.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({Key? key}) : super(key: key);
@@ -69,7 +68,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     textInputAction: TextInputAction.next,
                   ),
                 ),
-                Container(
+                SizedBox(
                   width: 300,
                   child: TextField(
                     controller: selfIntroductionController,
@@ -118,8 +117,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           );
                           var _result = await UserFireStore.setUser(newAccount);
                           if (_result == true) {
-                            // uplordが成功し終わってから元の画面に戻るってしたいので
-                            Navigator.pop(context);
+                            result.user!.sendEmailVerification();//Emailアドレスにメールを送る処理
+                            // uploadが成功し終わってから元の画面に戻るってしたいので
+                            Navigator.push(context, MaterialPageRoute(
+                                builder: (context) => CheckEmailPage(
+                                    email: emailController.text, pass: passController.text))
+                            );
                           }
                         }
                       }
