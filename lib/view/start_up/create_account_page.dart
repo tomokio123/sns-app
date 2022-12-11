@@ -6,10 +6,13 @@ import 'package:sns_app/utils/authentication.dart';
 import 'package:sns_app/utils/firestore/users.dart';
 import 'package:sns_app/utils/function_utils.dart';
 import 'package:sns_app/utils/widget_utils.dart';
+import 'package:sns_app/view/screen.dart';
 import 'package:sns_app/view/start_up/check_email_page.dart';
 
 class CreateAccountPage extends StatefulWidget {
-  const CreateAccountPage({Key? key}) : super(key: key);
+  final bool isSignInWithGoogle;
+
+  CreateAccountPage({this.isSignInWithGoogle = false});
 
   @override
   _CreateAccountPageState createState() => _CreateAccountPageState();
@@ -76,22 +79,27 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                     textInputAction: TextInputAction.next,
                   ),
                 ),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  width: 300,
-                  child: TextField(
-                    controller: emailController,
-                    decoration: const InputDecoration(hintText: 'メールアドレス'),
-                    textInputAction: TextInputAction.next,
-                  ),
-                ),
-                Container(
-                  width: 300,
-                  child: TextField(
-                    controller: passController,
-                    decoration: const InputDecoration(hintText: 'パスワード'),
-                    textInputAction: TextInputAction.done,
-                  ),
+                widget.isSignInWithGoogle ? Container() : Column(
+                  //Googleで来ていたらいらんくて、Googleから来ていなかったら要るs
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      width: 300,
+                      child: TextField(
+                        controller: emailController,
+                        decoration: const InputDecoration(hintText: 'メールアドレス'),
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ),
+                    SizedBox(
+                      width: 300,
+                      child: TextField(
+                        controller: passController,
+                        decoration: const InputDecoration(hintText: 'パスワード'),
+                        textInputAction: TextInputAction.done,
+                      ),
+                    )
+                  ],
                 ),
                 const SizedBox(height: 50),
                 ElevatedButton(
@@ -99,23 +107,27 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                       if(nameController.text.isNotEmpty
                           && userIdController.text.isNotEmpty
                           && selfIntroductionController.text.isNotEmpty
-                          && emailController.text.isNotEmpty
-                          && passController.text.isNotEmpty
+                          /*&& emailController.text.isNotEmpty
+                          && passController.text.isNotEmpty*///この二つは消す。なぜなら
+                          //EmailAuth(以下の await Authentication.signUp) の処理でこの二つがなければエラーが出るようになっているから
+                          // この二つがなくてもバリアできている
                           && image != null
                       ){
+                        if(widget.isSignInWithGoogle){// widget.isSignInWithGoogleがtrue だったら、サインアップする必要が無いので
+                          var _result = await createAccount(Authentication.currentFirebaseUser!.uid);
+                          //uidはAuthentication.currentFirebaseUser!のuid
+                          //createAccountする↑
+                          if(_result == true){//_resultにちゃんとUIdが格納されていたら
+                            await UserFireStore.getUser(Authentication.currentFirebaseUser!.uid);
+                            //FireStoreのユーザをGetして、遷移
+                            Navigator.pop(context);//戻って
+                            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Screen()));//ホーム画面へ
+                          }
+                        }
                         var result = await Authentication.signUp(email: emailController.text, pass: passController.text);
                         if(result is UserCredential) {
                           //　「resultに入ってる値の型がUserCredential型なら」って意味
-                          String imagePath = await FunctionUtils.uplordImage(result.user!.uid, image!);//uidに加えてimageもおくる。
-                          //!でnull回避 await をつけておく一応
-                          Account newAccount = Account(
-                              id: result.user!.uid,
-                              name: nameController.text,
-                              userId: userIdController.text,
-                              selfIntroduction: selfIntroductionController.text,
-                              imagePath: imagePath
-                          );
-                          var _result = await UserFireStore.setUser(newAccount);
+                          var _result = await createAccount(result.user!.uid);//resultに入っているuidを_resultに格納
                           if (_result == true) {
                             result.user!.sendEmailVerification();//Emailアドレスにメールを送る処理
                             // uploadが成功し終わってから元の画面に戻るってしたいので
@@ -134,5 +146,19 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         ),
       ),
     );
+  }
+
+  Future<dynamic> createAccount(String uid) async{
+    String imagePath = await FunctionUtils.uplordImage(uid, image!);//uidに加えてimageもおくる。
+    //!でnull回避 await をつけておく一応
+    Account newAccount = Account(
+        id: uid,
+        name: nameController.text,
+        userId: userIdController.text,
+        selfIntroduction: selfIntroductionController.text,
+        imagePath: imagePath
+    );
+    var _result = await UserFireStore.setUser(newAccount);
+    return _result;
   }
 }
